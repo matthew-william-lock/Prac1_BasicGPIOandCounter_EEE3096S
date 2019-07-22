@@ -9,23 +9,29 @@ Prac: 1
 Date: 04/08/2019
 """
 
-# import Relevant Librares
+# Import GPIO libraries
 import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BOARD)
+print("GPIO libraries successfully imported!")
+
+# Import other relevant Librares
 import time
 import itertools
-print("GPIO and imports successful")
+print("Other relevant imports successful!")
 
 # Use itertools to set up binary values for states of LEDs
 binaryStates = list(itertools.product([0, 1], repeat=3))
-print binaryStates
+print("List of possible binary states:")
+print(binaryStates)
 
+# Counter to be displayed on LEDs
 counter = 0
 
+# Set up inputs and output pins
 inputs = [16,18]
 LED_counter=[29,31,33]
 flashing=37
 
+# Method used to update LED display after button press
 def updateLEDs(button):
     global counter
     if button:
@@ -37,9 +43,13 @@ def updateLEDs(button):
         if counter<0:
             counter=7
     # Prints binary state and displays on LEDs
-    print(binaryStates[counter])
+    print "Counter :",counter
+    print "Binary State:", binaryStates[counter]
     GPIO.output(LED_counter, binaryStates[counter])
 
+# Method to set LED counter to 0 on start
+def clearCounter():
+    GPIO.output(LED_counter,0)
 
 # Detects counter add button press and calls for LED update
 def add_callback(channel):
@@ -58,21 +68,26 @@ def main():
     GPIO.output(flashing, 0)
     time.sleep(0.3)
 
-# Only run the functions if
 if __name__ == "__main__":
     # Make sure the GPIO is stopped correctly
     try:
-        #Setup GPIO PINS
+        # Set board mode
+        GPIO.setmode(GPIO.BOARD)
+        print("Board mode successfully set!")
+        # Setup GPIO PINS
         GPIO.setup(LED_counter, GPIO.OUT)
         GPIO.setup(flashing,GPIO.OUT)
-        GPIO.output(LED_counter,0)
         GPIO.setup(inputs, GPIO.IN)
         print("GPIO pins setup successful")
+        # Clear LED counter
+        clearCounter()
 
         #Setup interrupts
         GPIO.add_event_detect(16, GPIO.RISING, callback=add_callback,bouncetime=200)
         GPIO.add_event_detect(18, GPIO.RISING, callback=subtract_callback,bouncetime=200)
         print("Interrupts setup successful")
+
+        print("---------- Setup Complete ----------")
 
         while True:
             main()
