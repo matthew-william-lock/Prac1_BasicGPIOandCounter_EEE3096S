@@ -15,10 +15,23 @@ GPIO.setmode(GPIO.BOARD)
 import time
 print("GPIO and imports successful")
 
-button1_pressed=False
+LED1=False
+LED2=False
+LED3=False
+
 
 def press_callback(channel):
-    print("pressed!")
+
+    global LED1
+    print("Button1 pressed!")
+
+    if not LED1:
+        GPIO.output(29,1)
+        LED1 = True
+
+    else:
+        GPIO.output(29,0)
+        LED1 = False
 
 def main():
     #if GPIO.event_detected(16):
@@ -44,7 +57,7 @@ if __name__ == "__main__":
 
         #Setup interrupts
         #GPIO.add_event_detect(16, GPIO.RISING,bouncetime=200)
-        GPIO.add_event_detect(16, GPIO.RISING, callback=press_callback)
+        GPIO.add_event_detect(16, GPIO.RISING, callback=press_callback,bouncetime=300)
         print("Interrupts setup successful")
 
         while True:
